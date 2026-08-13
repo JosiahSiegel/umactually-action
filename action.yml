@@ -44,7 +44,7 @@
 #   `docs/install-action.md#first-run-secret-bootstrap` for the
 #   long form and `src/util/exit-codes.ts` for the literal.
 name: "UmActually PR review"
-description: "Run umactually as a Composite Action — Node.js 24 setup, npm install of the CLI, first-run secret bootstrap, live PR review, and verdict output for branch protection."
+description: "AI PR review as a Composite GitHub Action. Node 24 setup, CLI install, first-run secret bootstrap, verdict output."
 author: "Josiah Siegel <https://github.com/JosiahSiegel>"
 branding:
   icon: "check-circle"
