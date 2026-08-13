@@ -178,22 +178,24 @@ runs:
         UMACTUALLY_API_KEY: ${{ inputs.api-key }}
         GITHUB_TOKEN: ${{ github.token }}
       run: |
-        # Finding 3 fix: forward provider, skip-draft, and paths-ignore
-        # unconditionally (they always have defaults from action inputs).
+        # Forward --provider unconditionally (it always has a default).
         # Forward --model ONLY when non-empty, so the action's default
         # empty string does not override the wizard's saved config when
         # the operator didn't explicitly set a per-run model.
+        # The review subcommand auto-discovers `umactually.review.json`
+        # from the cwd (no --config-path needed); incremental review is
+        # per-PR via GitHub thread queries (no --skip-draft flag exists);
+        # path filtering uses --files and the diff's own ignore list
+        # (no --paths-ignore flag exists). The action retains the
+        # corresponding inputs in its contract for wizard compatibility.
         MODEL_ARGS=()
         if [ -n "${{ inputs.model }}" ]; then
           MODEL_ARGS+=(--model "${{ inputs.model }}")
         fi
         umactually review \
           --platform github \
-          --config-path "${{ inputs.config-path }}" \
           --output-artifact "${{ inputs.output-artifact || 'umactually-review.json' }}" \
           --provider "${{ inputs.provider }}" \
-          --skip-draft "${{ inputs.skip-draft }}" \
-          --paths-ignore "${{ inputs.paths-ignore }}" \
           "${MODEL_ARGS[@]}"
 
     - name: Upload review artifact
