@@ -15,19 +15,19 @@
 # These three outputs are what branch-protection rules branch on.
 #
 # Secret forwarding contract:
-#   GitHub Actions does NOT evaluate `${{ ... }}` expressions inside a
-#   Composite Action's `inputs.<key>.default` — they are stored as plain
-#   strings and passed verbatim. To avoid the literal `"${{ secrets.* }}"`
-#   string being truthy (which would silently bypass the bootstrap),
-#   `api-url` / `api-key` defaults are the empty string `""`. The calling
-#   workflow forwards secrets via the `secrets:` block on `uses:` (NOT via
-#   the input `default:`), using the action's declared secret names:
-#     secrets:
+#   Per docs.github.com/en/actions/reference/workflows-and-actions/contexts:
+#   "this context [secrets] is not available to composite actions;
+#    secrets must be passed to composite actions explicitly as inputs."
+#   The action's `api-url` / `api-key` inputs are the canonical
+#   Composite Action pattern for forwarding secrets. Calling workflows
+#   MUST pass them via `with:` (not via a `secrets:` block on `uses:`,
+#   which is a JavaScript/Docker action pattern and not supported here):
+#     with:
 #       api-url: ${{ secrets.UMACTUALLY_API_URL }}
 #       api-key: ${{ secrets.UMACTUALLY_API_KEY }}
-#   Inside the action, env blocks coalesce `secrets.* || inputs.*` so
-#   both the `secrets:`-block form (new) and the legacy `with:` form
-#   still work.
+#   Defaults are the empty string `""` (avoids a truthy literal
+#   `"${{ secrets.* }}"` placeholder that would silently bypass the
+#   bootstrap).
 #
 # First-run secret bootstrap behavior:
 #   The `bootstrap-secret-pr-comment` step detects a missing
@@ -55,11 +55,11 @@ inputs:
     required: false
     default: "__UMACTUALLY_VERSION__"
   api-url:
-    description: "API base URL for the configured provider family. Forwarded to the CLI as `UMACTUALLY_API_URL`. Default is empty — forward the secret via the `secrets:` block on `uses:` (e.g. `secrets: api-url: ${{ secrets.UMACTUALLY_API_URL }}`), NOT via the input `default:`. Only override via `with: api-url:` when the provider's base URL differs from the secret (e.g. Anthropic or a non-default OpenAI-compatible host)."
+    description: "API base URL for the configured provider family. Forwarded to the CLI as `UMACTUALLY_API_URL`. Default is empty — the calling workflow forwards the secret via `with: api-url: ${{ secrets.UMACTUALLY_API_URL }}` (Composite Actions cannot access the `secrets.` context; passing via a `secrets:` block on `uses:` is not supported)."
     required: false
     default: ""
   api-key:
-    description: "Provider API key. Forwarded to the CLI as `UMACTUALLY_API_KEY`. Default is empty — forward the secret via the `secrets:` block on `uses:` (e.g. `secrets: api-key: ${{ secrets.UMACTUALLY_API_KEY }}`), NOT via the input `default:`. Never place the credential in YAML literals or command arguments."
+    description: "Provider API key. Forwarded to the CLI as `UMACTUALLY_API_KEY`. Default is empty — the calling workflow forwards the secret via `with: api-key: ${{ secrets.UMACTUALLY_API_KEY }}` (Composite Actions cannot access the `secrets.` context; passing via a `secrets:` block on `uses:` is not supported). Never place the credential in YAML literals or command arguments."
     required: false
     default: ""
   provider:
@@ -93,13 +93,6 @@ outputs:
     description: "Number of inline review threads posted to the PR. Zero is a successful clean review. Surfaced as a job summary for human reviewers."
   review-id:
     description: "Opaque run identifier (request id) emitted by the CLI in the review artifact's `metadata.requestId` field. Used for log correlation."
-secrets:
-  api-url:
-    description: "Repository secret mapped to `UMACTUALLY_API_URL`. The calling workflow forwards via `secrets: api-url: ${{ secrets.UMACTUALLY_API_URL }}` on the `uses:` line."
-    required: false
-  api-key:
-    description: "Repository secret mapped to `UMACTUALLY_API_KEY`. The calling workflow forwards via `secrets: api-key: ${{ secrets.UMACTUALLY_API_KEY }}` on the `uses:` line."
-    required: false
 runs:
   using: "composite"
   steps:
@@ -133,10 +126,10 @@ runs:
       id: bootstrap
       shell: bash
       env:
-        # Coalesce: prefer the `secrets:`-block forwarding (new contract),
-        # fall back to `inputs.*` (legacy `with:` path or explicit override).
-        UMACTUALLY_API_URL: ${{ secrets.api-url || inputs.api-url }}
-        UMACTUALLY_API_KEY: ${{ secrets.api-key || inputs.api-key }}
+        # Composite Actions cannot access the `secrets.` context — the
+        # calling workflow MUST forward via `with:` (see header comment).
+        UMACTUALLY_API_URL: ${{ inputs.api-url }}
+        UMACTUALLY_API_KEY: ${{ inputs.api-key }}
         GITHUB_TOKEN: ${{ github.token }}
       run: |
         if [ -z "$UMACTUALLY_API_URL" ] || [ -z "$UMACTUALLY_API_KEY" ]; then
@@ -179,10 +172,10 @@ runs:
       id: review
       shell: bash
       env:
-        # Coalesce: prefer the `secrets:`-block forwarding (new contract),
-        # fall back to `inputs.*` (legacy `with:` path or explicit override).
-        UMACTUALLY_API_URL: ${{ secrets.api-url || inputs.api-url }}
-        UMACTUALLY_API_KEY: ${{ secrets.api-key || inputs.api-key }}
+        # Composite Actions cannot access the `secrets.` context — the
+        # calling workflow MUST forward via `with:` (see header comment).
+        UMACTUALLY_API_URL: ${{ inputs.api-url }}
+        UMACTUALLY_API_KEY: ${{ inputs.api-key }}
         GITHUB_TOKEN: ${{ github.token }}
       run: |
         # Finding 3 fix: forward provider, skip-draft, and paths-ignore
