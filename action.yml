@@ -55,11 +55,11 @@ inputs:
     required: false
     default: "__UMACTUALLY_VERSION__"
   api-url:
-    description: "API base URL for the configured provider family. Forwarded to the CLI as `UMACTUALLY_API_URL`. Default is empty — the calling workflow forwards the secret via `with: api-url: ${{ secrets.UMACTUALLY_API_URL }}` (Composite Actions cannot access the `secrets.` context; passing via a `secrets:` block on `uses:` is not supported)."
+    description: "API base URL for the configured provider family. Forwarded to the CLI as `UMACTUALLY_API_URL`. Default is empty — the calling workflow forwards the secret via `with: api-url: secrets.UMACTUALLY_API_URL` (Composite Actions cannot access the `secrets.` context; passing via a `secrets:` block on `uses:` is not supported)."
     required: false
     default: ""
   api-key:
-    description: "Provider API key. Forwarded to the CLI as `UMACTUALLY_API_KEY`. Default is empty — the calling workflow forwards the secret via `with: api-key: ${{ secrets.UMACTUALLY_API_KEY }}` (Composite Actions cannot access the `secrets.` context; passing via a `secrets:` block on `uses:` is not supported). Never place the credential in YAML literals or command arguments."
+    description: "Provider API key. Forwarded to the CLI as `UMACTUALLY_API_KEY`. Default is empty — the calling workflow forwards the secret via `with: api-key: secrets.UMACTUALLY_API_KEY` (Composite Actions cannot access the `secrets.` context; passing via a `secrets:` block on `uses:` is not supported). Never place the credential in YAML literals or command arguments."
     required: false
     default: ""
   provider:
