@@ -43,6 +43,14 @@
 #   required status check failure. See
 #   `docs/install-action.md#first-run-secret-bootstrap` for the
 #   long form and `src/util/exit-codes.ts` for the literal.
+#
+# Supply-chain integrity:
+#   Pin `uses:` to a full commit SHA (e.g. `@317613a... # v1`) for
+#   integrity. Floating `@v1` accepts any future tag the action repo
+#   publishes; a compromised repo gets to run arbitrary code in this
+#   workflow with `pull-requests: write`. SHA-pin + Dependabot's
+#   `github-actions` ecosystem auto-updates to the latest tagged commit
+#   without hand edits.
 name: "UmActually PR review"
 description: "AI PR review as a Composite GitHub Action. Node 24 setup, CLI install, first-run secret bootstrap, verdict output."
 author: "Josiah Siegel <https://github.com/JosiahSiegel>"
@@ -55,11 +63,11 @@ inputs:
     required: false
     default: "__UMACTUALLY_VERSION__"
   api-url:
-    description: "API base URL for the configured provider family. Forwarded to the CLI as `UMACTUALLY_API_URL`. Default is empty — the calling workflow forwards the secret via `with: api-url: secrets.UMACTUALLY_API_URL` (Composite Actions cannot access the `secrets.` context; passing via a `secrets:` block on `uses:` is not supported)."
+    description: "API base URL for the configured provider family. Forwarded to the CLI as `UMACTUALLY_API_URL`. Default is empty — the calling workflow forwards the secret via `with: api-url: ${{ secrets.UMACTUALLY_API_URL }}` (Composite Actions cannot access the `secrets.` context; passing via a `secrets:` block on `uses:` is not supported)."
     required: false
     default: ""
   api-key:
-    description: "Provider API key. Forwarded to the CLI as `UMACTUALLY_API_KEY`. Default is empty — the calling workflow forwards the secret via `with: api-key: secrets.UMACTUALLY_API_KEY` (Composite Actions cannot access the `secrets.` context; passing via a `secrets:` block on `uses:` is not supported). Never place the credential in YAML literals or command arguments."
+    description: "Provider API key. Forwarded to the CLI as `UMACTUALLY_API_KEY`. Default is empty — the calling workflow forwards the secret via `with: api-key: ${{ secrets.UMACTUALLY_API_KEY }}` (Composite Actions cannot access the `secrets.` context; passing via a `secrets:` block on `uses:` is not supported). Never place the credential in YAML literals or command arguments."
     required: false
     default: ""
   provider:
