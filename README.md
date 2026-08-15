@@ -7,7 +7,7 @@ Run UmActually as a Composite GitHub Action. The action owns Node.js 24 setup, `
 For supply-chain integrity, pin `uses:` to a full 40-character commit SHA. Floating `@v1` accepts any future tag the action repo publishes; a compromised repo gets to run arbitrary code in your workflow with `pull-requests: write`.
 
 ```yaml
-- uses: JosiahSiegel/umactually-action@000deded07b809f4aae814c786afaa33bd5963eb  # v1
+- uses: JosiahSiegel/umactually-action@9924e799c11ae31a694caf761bdfe7d66b7e78e9  # v1
 ```
 
 Update the SHA in your copy to match the latest tagged release:
@@ -57,9 +57,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: JosiahSiegel/umactually-action@000deded07b809f4aae814c786afaa33bd5963eb  # v1
+      - uses: JosiahSiegel/umactually-action@9924e799c11ae31a694caf761bdfe7d66b7e78e9  # v1
         with:
-          cli-version: 0.9.3
+          cli-version: 0.10.0
           provider: openai-compatible
           api-url: ${{ secrets.UMACTUALLY_API_URL }}
           api-key: ${{ secrets.UMACTUALLY_API_KEY }}
@@ -71,7 +71,7 @@ Secrets are forwarded via the `with:` inputs (`api-url`, `api-key`). Composite A
 
 | Input | Required | Default | Description |
 | --- | --- | --- | --- |
-| `cli-version` | no | `__UMACTUALLY_VERSION__` | `umactually` CLI version to install via `npm install -g`. The placeholder `__UMACTUALLY_VERSION__` is substituted by `umactually init` at wizard time; pin a specific tag (e.g. `0.9.3`) for hand-written files. |
+| `cli-version` | no | `__UMACTUALLY_VERSION__` | `umactually` CLI version to install via `npm install -g`. The placeholder `__UMACTUALLY_VERSION__` is substituted by `umactually init` at wizard time; pin a specific tag (e.g. `0.10.0`) for hand-written files. |
 | `provider` | no | `openai-compatible` | Provider family: `openai-compatible`, `anthropic`, or `copilot`. |
 | `model` | no | `""` | Provider-specific model identifier. Empty = let the provider pick its default. |
 | `api-url` | no | `""` | Provider API base URL. Forward your repo secret via `with: api-url: ${{ secrets.UMACTUALLY_API_URL }}`. |
