@@ -59,7 +59,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: JosiahSiegel/umactually-action@9924e799c11ae31a694caf761bdfe7d66b7e78e9  # v1
         with:
-          cli-version: 0.10.0
+          cli-version: 0.10.1
           provider: openai-compatible
           api-url: ${{ secrets.UMACTUALLY_API_URL }}
           api-key: ${{ secrets.UMACTUALLY_API_KEY }}
@@ -71,7 +71,7 @@ Secrets are forwarded via the `with:` inputs (`api-url`, `api-key`). Composite A
 
 | Input | Required | Default | Description |
 | --- | --- | --- | --- |
-| `cli-version` | no | `__UMACTUALLY_VERSION__` | `umactually` CLI version to install via `npm install -g`. The placeholder `__UMACTUALLY_VERSION__` is substituted by `umactually init` at wizard time; pin a specific tag (e.g. `0.10.0`) for hand-written files. |
+| `cli-version` | no | `__UMACTUALLY_VERSION__` | `umactually` CLI version to install via `npm install -g`. The placeholder `__UMACTUALLY_VERSION__` is substituted by `umactually init` at wizard time; pin a specific tag (e.g. `0.10.1`) for hand-written files. |
 | `provider` | no | `openai-compatible` | Provider family: `openai-compatible`, `anthropic`, or `copilot`. |
 | `model` | no | `""` | Provider-specific model identifier. Empty = let the provider pick its default. |
 | `api-url` | no | `""` | Provider API base URL. Forward your repo secret via `with: api-url: ${{ secrets.UMACTUALLY_API_URL }}`. |

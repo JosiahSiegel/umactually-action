@@ -59,7 +59,7 @@ branding:
   color: "blue"
 inputs:
   cli-version:
-    description: "Version of the `umactually` CLI to install via `npm install -g`. Default is a placeholder that `umactually init` replaces with the current CLI version. Pin a specific version (e.g. `0.10.0`) if not using the wizard."
+    description: "Version of the `umactually` CLI to install via `npm install -g`. Default is a placeholder that `umactually init` replaces with the current CLI version. Pin a specific version (e.g. `0.10.1`) if not using the wizard."
     required: false
     default: "__UMACTUALLY_VERSION__"
   api-url:
@@ -125,7 +125,7 @@ runs:
       # string only — it is intentionally NOT a new numeric exit code.
       run: |
         if [ "${{ inputs.cli-version }}" = "__UMACTUALLY_VERSION__" ]; then
-          echo "::error::UMACTUALLY_ERR_CLI_VERSION_UNRESOLVED — cli-version is the un-substituted wizard placeholder; pin it to a CLI version (e.g. \`0.10.0\`) or regenerate the workflow via \`umactually init\`."
+          echo "::error::UMACTUALLY_ERR_CLI_VERSION_UNRESOLVED — cli-version is the un-substituted wizard placeholder; pin it to a CLI version (e.g. \`0.10.1\`) or regenerate the workflow via \`umactually init\`."
           exit 1
         fi
         npm install -g "umactually@${{ inputs.cli-version }}"
