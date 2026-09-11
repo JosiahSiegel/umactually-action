@@ -78,6 +78,10 @@ inputs:
     description: "Provider-specific model identifier (optional). Empty string = let the provider pick its default model (e.g. OpenAI's `gpt-4o`, Anthropic's `claude-sonnet-4-5`)."
     required: false
     default: ""
+  effort:
+    description: "Optional reasoning effort level. One of `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, or `max` (requires an installed CLI version that supports `--effort`, i.e. 0.12.0+). Forwarded to the CLI as `--effort` only when non-empty. Empty defers to a caller-provided `UMACTUALLY_EFFORT` environment variable, then the saved config, then the provider/model default."
+    required: false
+    default: ""
   config-path:
     description: "Path to the committed `umactually.review.json` policy file (schemaVersion 1). Default `./umactually.review.json` — the wizard's default path; auto-discovery walks up to the repo root."
     required: false
@@ -200,11 +204,19 @@ runs:
         if [ -n "${{ inputs.model }}" ]; then
           MODEL_ARGS+=(--model "${{ inputs.model }}")
         fi
+        # Forward --effort ONLY when non-empty, mirroring MODEL_ARGS.
+        # UMACTUALLY_EFFORT is intentionally NOT set in the step `env:`
+        # block, so an unset input preserves caller env passthrough.
+        EFFORT_ARGS=()
+        if [ -n "${{ inputs.effort }}" ]; then
+          EFFORT_ARGS+=(--effort "${{ inputs.effort }}")
+        fi
         umactually review \
           --platform github \
           --output-artifact "${{ inputs.output-artifact || 'umactually-review.json' }}" \
           --provider "${{ inputs.provider }}" \
-          "${MODEL_ARGS[@]}"
+          "${MODEL_ARGS[@]}" \
+          "${EFFORT_ARGS[@]}"
 
     - name: Upload review artifact
       if: always()
