@@ -7,7 +7,7 @@ Run UmActually as a Composite GitHub Action. The action owns Node.js 24 setup, `
 For supply-chain integrity, pin `uses:` to a full 40-character commit SHA. Floating `@v1` accepts any future tag the action repo publishes; a compromised repo gets to run arbitrary code in your workflow with `pull-requests: write`.
 
 ```yaml
-- uses: JosiahSiegel/umactually-action@9924e799c11ae31a694caf761bdfe7d66b7e78e9  # v1
+- uses: JosiahSiegel/umactually-action@9bfdeeb213811dd9e492bcf6a888d6fd319b84b1  # v1
 ```
 
 Update the SHA in your copy to match the latest tagged release:
@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: JosiahSiegel/umactually-action@9924e799c11ae31a694caf761bdfe7d66b7e78e9  # v1
+      - uses: JosiahSiegel/umactually-action@9bfdeeb213811dd9e492bcf6a888d6fd319b84b1  # v1
         with:
           cli-version: 0.12.0
           provider: openai-compatible
